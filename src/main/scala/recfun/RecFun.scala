@@ -34,21 +34,9 @@ object RecFun extends RecFunInterface:
    * Exercise 3
    */
   def countChange(money: Int, coins: List[Int]): Int =
-    def change(money: Int, coins: List[Int]): Int =
-      // println(s"money: $money - coins: $coins")
-      if(coins.isEmpty || money <= 0) { 0 } 
-      else {
-        val amount = coins.head
-        val r = money % amount
-        lazy val q = money / amount
-        // println(s"amount: $amount - r: $r - q: $q")
-        if(coins.size == 1) { if r == 0 then 1 else 0 }
-        else { 
-          lazy val rCount = change(r, coins.drop(1))
-          val qCount = if amount <= money && (r == 0 || rCount > 0) then 1 + q * change(amount, coins.drop(1)) + rCount else 0
-          qCount + change(money, coins.filter(c => amount%c != 0 ))
-        }
-      }
-    
-    val sortedCoins = coins.sorted.reverse
-    change(money, sortedCoins)
+    def loop(money: Int, coins: List[Int]): Int = 
+      if (money < 0 || coins.isEmpty ) 0
+      else if (money == 0 ) 1
+      else loop(money, coins.tail) + loop(money - coins.head, coins)
+
+    loop(money, coins)
