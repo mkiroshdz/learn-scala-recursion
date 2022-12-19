@@ -3,11 +3,7 @@ package recfun
 object RecFun extends RecFunInterface:
 
   def main(args: Array[String]): Unit =
-    println("Pascal's Triangle")
-    for row <- 0 to 10 do
-      for col <- 0 to row do
-        print(s"${pascal(col, row)} ")
-      println()
+    println(countChange(4,List(1,2)))
 
   /**
    * Exercise 1
@@ -37,4 +33,22 @@ object RecFun extends RecFunInterface:
   /**
    * Exercise 3
    */
-  def countChange(money: Int, coins: List[Int]): Int = ???
+  def countChange(money: Int, coins: List[Int]): Int =
+    def change(money: Int, coins: List[Int]): Int =
+      // println(s"money: $money - coins: $coins")
+      if(coins.isEmpty || money <= 0) { 0 } 
+      else {
+        val amount = coins.head
+        val r = money % amount
+        lazy val q = money / amount
+        // println(s"amount: $amount - r: $r - q: $q")
+        if(coins.size == 1) { if r == 0 then 1 else 0 }
+        else { 
+          lazy val rCount = change(r, coins.drop(1))
+          val qCount = if amount <= money && (r == 0 || rCount > 0) then 1 + q * change(amount, coins.drop(1)) + rCount else 0
+          qCount + change(money, coins.filter(c => amount%c != 0 ))
+        }
+      }
+    
+    val sortedCoins = coins.sorted.reverse
+    change(money, sortedCoins)
